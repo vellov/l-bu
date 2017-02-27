@@ -29,7 +29,7 @@ function Update () {
             moveDirection = bounce;
             bounce = Vector3.zero;
         } else {
-            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            moveDirection = new Vector3(Input.acceleration.x, 0, -Input.acceleration.z);
             moveDirection = transform.TransformDirection(moveDirection);
             moveDirection *= speed;
         }
@@ -37,7 +37,7 @@ function Update () {
         if (Input.GetButton("Jump"))
             moveDirection.y = jumpSpeed;
     } else {
-        moveDirection = Vector3(Input.GetAxis("Horizontal"), moveDirection.y, Input.GetAxis("Vertical"));
+        moveDirection = Vector3(Input.acceleration.x, moveDirection.y, -Input.acceleration.z);
         moveDirection = transform.TransformDirection(moveDirection);
         moveDirection.x *= speed;
         moveDirection.z *= speed;
