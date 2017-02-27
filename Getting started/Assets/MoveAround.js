@@ -7,29 +7,28 @@ var moveDirection: Vector3 = Vector3.zero;
 var bounce: Vector3 = Vector3.zero;
 var v;
 var flag = false;
+private var isTouchDevice: boolean = false; 
+
+function Awake() {
+	if(Application.platform == RuntimePlatform.IPhonePlayer) {
+		isTouchDevice = true;
+	} else {
+		isTouchDevice = false;
+	}
+}
+
 function Update () {
     var controller: CharacterController = GetComponent(CharacterController);
-    // Rotate around y - axis
-    /*transform.Rotate(0, CnControls.CnInputManager.GetAxis("Horizontal") * rotateSpeed, 0);
- 
-    // Move forward / backward
-    var forward: Vector3 = transform.TransformDirection(Vector3.forward);
-    var curSpeed: float = speed * CnControls.CnInputManager.GetAxis ("Vertical");
-    controller.Move(forward * curSpeed);*/
-    /*var currentSpeed = speed * CnControls.CnInputManager.GetAxis("Vertical");
-    var moveDirection: Vector3 = Vector3.zero;
-    moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-   // moveDirection = new Vector3(-3.4, y, -10.97);
-    moveDirection = transform.TransformDirection(moveDirection);
-    //moveDirection *= currentSpeed;
-    controller.SimpleMove(moveDirection);*/
+
+	var x = isTouchDevice ? Input.acceleration.x : Input.GetAxis("Horizontal");
+	var z = isTouchDevice ? -Input.acceleration.z : Input.GetAxis("Vertical");
 
     if (controller.isGrounded) {
         if (bounce.sqrMagnitude > 0) {
             moveDirection = bounce;
             bounce = Vector3.zero;
         } else {
-            moveDirection = new Vector3(Input.acceleration.x, 0, -Input.acceleration.z);
+            moveDirection = new Vector3(x, 0, z);
             moveDirection = transform.TransformDirection(moveDirection);
             moveDirection *= speed;
         }
@@ -37,7 +36,7 @@ function Update () {
         if (Input.GetButton("Jump"))
             moveDirection.y = jumpSpeed;
     } else {
-        moveDirection = Vector3(Input.acceleration.x, moveDirection.y, -Input.acceleration.z);
+        moveDirection = Vector3(x, moveDirection.y, z);
         moveDirection = transform.TransformDirection(moveDirection);
         moveDirection.x *= speed;
         moveDirection.z *= speed;
@@ -47,7 +46,7 @@ function Update () {
     controller.Move(moveDirection * Time.deltaTime);
 }
 
-function OnControllerColliderHit(hit) {
+function OnControllerColliderHit(hit: ControllerColliderHit) {
     var body = hit.collider.attachedRigidbody;
     if ((body == null || body.isKinematic)) {
         
